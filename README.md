@@ -1,35 +1,59 @@
 # Membrane Template Plugin
 
-[![Hex.pm](https://img.shields.io/hexpm/v/membrane_template_plugin.svg)](https://hex.pm/packages/membrane_template_plugin)
-[![API Docs](https://img.shields.io/badge/api-docs-yellow.svg?style=flat)](https://hexdocs.pm/membrane_template_plugin)
-[![CircleCI](https://circleci.com/gh/membraneframework/membrane_template_plugin.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane_template_plugin)
+[![Hex.pm](https://img.shields.io/hexpm/v/membrane_generator_plugin.svg)](https://hex.pm/packages/membrane_generator_plugin)
+[![API Docs](https://img.shields.io/badge/api-docs-yellow.svg?style=flat)](https://hexdocs.pm/membrane_generator_plugin)
+[![CircleCI](https://circleci.com/gh/membraneframework/membrane_generator_plugin.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane_generator_plugin)
 
-This repository contains a template for new elements.
-
-Check out different branches for other flavours of template.
+This repository contains audio generator.
 
 It is part of [Membrane Multimedia Framework](https://membraneframework.org).
 
 ## Installation
 
-The package can be installed by adding `membrane_template_plugin` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `membrane_generator_plugin` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:membrane_template_plugin, "~> 0.1.0"}
+    {:membrane_generator_plugin, "~> 0.1.0"}
   ]
 end
 ```
 
-## Usage
+## Usage Example
 
-TODO
+```elixir
+defmodule Generating.Pipeline do
+  use Membrane.Pipeline
+
+  @impl true
+  def handle_init(_) do
+    children = [
+      generator: %Membrane.SilenceGenerator{
+        caps: %Membrane.Caps.Audio.Raw{
+          channels: 1,
+          sample_rate: 16_000,
+          format: :s16le
+        },
+        duration: Membrane.Time.milliseconds(100)
+      },
+      sink: %Membrane.File.Sink{location: "/tmp/output.raw"},
+    ]
+
+    links = [
+      link(:generator)
+      |> to(:sink)
+    ]
+
+    {{:ok, spec: %ParentSpec{children: children, links: links}}, %{}}
+  end
+end
+```
 
 ## Copyright and License
 
-Copyright 2020, [Software Mansion](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane_template_plugin)
+Copyright 2021, [Software Mansion](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane_generator_plugin)
 
-[![Software Mansion](https://logo.swmansion.com/logo?color=white&variant=desktop&width=200&tag=membrane-github)](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane_template_plugin)
+[![Software Mansion](https://logo.swmansion.com/logo?color=white&variant=desktop&width=200&tag=membrane-github)](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane_generator_plugin)
 
 Licensed under the [Apache License, Version 2.0](LICENSE)
