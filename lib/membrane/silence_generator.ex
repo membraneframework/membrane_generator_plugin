@@ -11,12 +11,12 @@ defmodule Membrane.SilenceGenerator do
   def_options caps: [
                 type: :struct,
                 spec: Raw.t(),
-                description: "Audio caps"
+                description: "Audio caps of generated samples (`t:Membrane.Caps.Audio.Raw.t/0`)"
               ],
               duration: [
-                type: :integer,
-                spec: Time.t(),
-                description: "Duration of the silence"
+                type: :timeout,
+                spec: Time.t() | :infinity,
+                description: "Duration of the generated silent samples"
               ],
               frames_per_buffer: [
                 type: :integer,
@@ -56,6 +56,11 @@ defmodule Membrane.SilenceGenerator do
 
     time = buffers * Raw.frames_to_time(frames_per_buffer, caps)
     do_handle_demand(time, state)
+  end
+
+  defp do_handle_demand(time, %{caps: caps, duration: :infinity} = state) do
+    buffer = %Buffer{payload: Raw.sound_of_silence(caps, time)}
+    {{:ok, buffer: {:output, buffer}}, state}
   end
 
   defp do_handle_demand(time, state) do

@@ -15,7 +15,7 @@ defmodule Membrane.SilenceGeneratorTest do
   }
 
   test "Silence Generator should work with bytes as demand unit" do
-    duration = Membrane.Time.milliseconds(4000)
+    duration = Membrane.Time.seconds(4)
 
     elements = [
       generator: %SilenceGenerator{caps: @caps, duration: duration},
@@ -46,7 +46,7 @@ defmodule Membrane.SilenceGeneratorTest do
   end
 
   test "Silence Generator should work with buffers as demand unit" do
-    duration = Membrane.Time.milliseconds(6000)
+    duration = Membrane.Time.seconds(6)
 
     elements = [
       generator: %SilenceGenerator{caps: @caps, duration: duration},
