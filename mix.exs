@@ -1,7 +1,7 @@
 defmodule Membrane.Template.Mixfile do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "0.2.0"
   @github_url "https://github.com/membraneframework/membrane_generator_plugin"
 
   def project do
@@ -37,6 +37,7 @@ defmodule Membrane.Template.Mixfile do
       {:ex_doc, "~> 0.24", only: :dev, runtime: false},
       {:membrane_audio_mix_plugin, "~> 0.3.0"},
       {:membrane_caps_audio_raw, "~> 0.2"},
+      {:membrane_caps_video_raw, "~> 0.1"},
       {:membrane_core, "~> 0.7.0"}
     ]
   end
