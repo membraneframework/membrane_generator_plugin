@@ -18,22 +18,22 @@ defmodule Membrane.BlankVideoGeneratorTest do
   }
   @caps_i422 %Raw{@caps_i420 | format: :I422}
 
-  describe "Blank Video Generator should work with buffers as demand unit for caps" do
-    test "with I420 format" do
+  describe "I420 format" do
+    test "buffer generation" do
       test_for_caps(@caps_i420)
     end
 
-    test "with I422 format" do
-      test_for_caps(@caps_i422)
+    test "encoding generated buffers to H264" do
+      test_h264(@caps_i420)
     end
   end
 
-  describe "Generated raw video should be successfully encoded to H264 for caps" do
-    test "with I420 format" do
-      test_h264(@caps_i420)
+  describe "I422 format" do
+    test "buffer generation" do
+      test_for_caps(@caps_i422)
     end
 
-    test "with I422 format" do
+    test "encoding generated buffers to H264" do
       test_h264(@caps_i422)
     end
   end
@@ -53,6 +53,7 @@ defmodule Membrane.BlankVideoGeneratorTest do
 
     pipeline_options = %Pipeline.Options{elements: elements, links: links}
     assert {:ok, pid} = Pipeline.start_link(pipeline_options)
+    on_exit(fn -> Pipeline.stop_and_terminate(pid, blocking: true) end)
 
     assert Pipeline.play(pid) == :ok
     assert_start_of_stream(pid, :sink)
@@ -91,6 +92,7 @@ defmodule Membrane.BlankVideoGeneratorTest do
 
     pipeline_options = %Pipeline.Options{elements: elements, links: links}
     assert {:ok, pid} = Pipeline.start_link(pipeline_options)
+    on_exit(fn -> Pipeline.stop_and_terminate(pid, blocking: true) end)
 
     assert Pipeline.play(pid) == :ok
     assert_start_of_stream(pid, :sink)

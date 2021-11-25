@@ -29,10 +29,20 @@ defmodule Membrane.BlankVideoGenerator do
 
   @impl true
   def handle_init(opts) do
-    %Raw{framerate: {frames, seconds}} = opts.caps
+    cond do
+      !caps_supported?(opts.caps) ->
+        raise """
+        Cannot initialize generator, passed caps are not supported.
+        """
 
-    case caps_correct?(opts.caps) do
-      :ok ->
+      !correct_dimensions?(opts.caps) ->
+        raise """
+        Cannot initialize generator, the size of frame specified by caps doesn't pass format requirements.
+        """
+
+      true ->
+        %Raw{framerate: {frames, seconds}} = opts.caps
+
         state =
           opts
           |> Map.from_struct()
@@ -41,16 +51,6 @@ defmodule Membrane.BlankVideoGenerator do
           |> Map.put(:ts_increment, Ratio.new(seconds |> Time.seconds(), frames))
 
         {:ok, state}
-
-      {:error, :caps_not_supported} ->
-        raise """
-        Cannot initialize generator, passed caps are not supported.
-        """
-
-      {:error, :format} ->
-        raise """
-        Cannot initialize generator, the size of frame specified by caps doesn't pass format requirements.
-        """
     end
   end
 
@@ -67,20 +67,14 @@ defmodule Membrane.BlankVideoGenerator do
     {{:ok, caps: {:output, caps}}, state}
   end
 
-  defp caps_correct?(caps) do
-    if Matcher.match?(@supported_caps, caps) do
-      do_caps_correct?(caps)
-    else
-      {:error, :caps_not_supported}
-    end
+  defp caps_supported?(caps), do: Matcher.match?(@supported_caps, caps)
+
+  defp correct_dimensions?(%Raw{format: :I420, width: width, height: height}) do
+    rem(height, 2) == 0 && rem(width, 2) == 0
   end
 
-  defp do_caps_correct?(%Raw{format: :I420, width: width, height: height}) do
-    if rem(height, 2) == 0 && rem(width, 2) == 0, do: :ok, else: {:error, :format}
-  end
-
-  defp do_caps_correct?(%Raw{format: :I422, width: width}) do
-    if rem(width, 2) == 0, do: :ok, else: {:error, :format}
+  defp correct_dimensions?(%Raw{format: :I422, width: width}) do
+    rem(width, 2) == 0
   end
 
   defp get_buffers(size, state, acc \\ [])
