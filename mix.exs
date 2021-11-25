@@ -38,7 +38,8 @@ defmodule Membrane.Template.Mixfile do
       {:membrane_audio_mix_plugin, "~> 0.4.0"},
       {:membrane_caps_audio_raw, "~> 0.5"},
       {:membrane_caps_video_raw, "~> 0.1"},
-      {:membrane_core, "~> 0.8.0"}
+      {:membrane_core, "~> 0.8.0"},
+      {:membrane_h264_ffmpeg_plugin, "~> 0.14.0", only: :test}
     ]
   end
 

@@ -4,8 +4,9 @@ defmodule Membrane.BlankVideoGeneratorTest do
 
   import Membrane.Testing.Assertions
 
-  alias Membrane.{Buffer, BlankVideoGenerator}
+  alias Membrane.{BlankVideoGenerator, Buffer}
   alias Membrane.Caps.Video.Raw
+  alias Membrane.H264.FFmpeg.Encoder
   alias Membrane.Testing.{Pipeline, Sink}
 
   @caps_i420 %Raw{
@@ -15,6 +16,7 @@ defmodule Membrane.BlankVideoGeneratorTest do
     framerate: {1, 1},
     aligned: true
   }
+  @caps_i422 %Raw{@caps_i420 | format: :I422}
 
   describe "Blank Video Generator should work with buffers as demand unit for caps" do
     test "with I420 format" do
@@ -22,9 +24,17 @@ defmodule Membrane.BlankVideoGeneratorTest do
     end
 
     test "with I422 format" do
-      caps_i422 = %Raw{@caps_i420 | format: :I422}
+      test_for_caps(@caps_i422)
+    end
+  end
 
-      test_for_caps(caps_i422)
+  describe "Generated raw video should be successfully encoded to H264 for caps" do
+    test "with I420 format" do
+      test_h264(@caps_i420)
+    end
+
+    test "with I422 format" do
+      test_h264(@caps_i422)
     end
   end
 
@@ -60,6 +70,30 @@ defmodule Membrane.BlankVideoGeneratorTest do
     {:ok, size} = Raw.frame_size(caps)
     assert byte_size(blank_video) == 3 * size
 
+    assert_end_of_stream(pid, :sink, :input, 5_000)
+    Pipeline.stop_and_terminate(pid, blocking?: true)
+  end
+
+  defp test_h264(caps) do
+    duration = Membrane.Time.seconds(10)
+
+    elements = [
+      generator: %BlankVideoGenerator{caps: caps, duration: duration},
+      encoder: Encoder,
+      sink: Sink
+    ]
+
+    links = [
+      link(:generator)
+      |> to(:encoder)
+      |> to(:sink)
+    ]
+
+    pipeline_options = %Pipeline.Options{elements: elements, links: links}
+    assert {:ok, pid} = Pipeline.start_link(pipeline_options)
+
+    assert Pipeline.play(pid) == :ok
+    assert_start_of_stream(pid, :sink)
     assert_end_of_stream(pid, :sink, :input, 5_000)
     Pipeline.stop_and_terminate(pid, blocking?: true)
   end
