@@ -1,5 +1,5 @@
 defmodule Membrane.SilenceGeneratorTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   use Membrane.Pipeline
 
   import Membrane.Testing.Assertions
@@ -37,12 +37,11 @@ defmodule Membrane.SilenceGeneratorTest do
 
     assert_sink_buffer(pid, :sink, %Buffer{payload: payload_1})
     assert_sink_buffer(pid, :sink, %Buffer{payload: payload_2})
-    assert_sink_buffer(pid, :sink, %Buffer{payload: payload_3})
 
     assert_end_of_stream(pid, :sink, :input, 5_000)
     Pipeline.stop_and_terminate(pid, blocking?: true)
 
-    assert payload_1 <> payload_2 <> payload_3 == Raw.sound_of_silence(@caps, duration)
+    assert payload_1 <> payload_2 == Raw.sound_of_silence(@caps, duration)
   end
 
   test "Silence Generator should work with buffers as demand unit" do

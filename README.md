@@ -15,15 +15,16 @@ The package can be installed by adding `membrane_generator_plugin` to your list 
 ```elixir
 def deps do
   [
-    {:membrane_generator_plugin, "~> 0.1.0"}
+    {:membrane_generator_plugin, "~> 0.2.0"}
   ]
 end
 ```
 
 ## Usage Example
 
+### Silence generator
 ```elixir
-defmodule Generating.Pipeline do
+defmodule AudioGenerating.Pipeline do
   use Membrane.Pipeline
 
   @impl true
@@ -34,6 +35,37 @@ defmodule Generating.Pipeline do
           channels: 1,
           sample_rate: 16_000,
           format: :s16le
+        },
+        duration: Membrane.Time.milliseconds(100)
+      },
+      sink: %Membrane.File.Sink{location: "/tmp/output.raw"},
+    ]
+
+    links = [
+      link(:generator)
+      |> to(:sink)
+    ]
+
+    {{:ok, spec: %ParentSpec{children: children, links: links}}, %{}}
+  end
+end
+```
+
+### Blank Video Generator
+```elixir
+defmodule VideoGenerating.Pipeline do
+  use Membrane.Pipeline
+
+  @impl true
+  def handle_init(_) do
+    children = [
+      generator: %Membrane.BlankVideoGenerator{
+        caps: %Membrane.Caps.Video.Raw{
+          format: :I420,
+          height: 720,
+          width: 1280,
+          framerate: {30, 1},
+          aligned: true
         },
         duration: Membrane.Time.milliseconds(100)
       },
