@@ -5,9 +5,9 @@ defmodule Membrane.BlankVideoGenerator do
 
   use Membrane.Source
 
-  alias Membrane.{Buffer, Time}
   alias Membrane.Caps.Matcher
   alias Membrane.Caps.Video.Raw
+  alias Membrane.{Buffer, Time}
 
   @supported_caps {Raw, format: Matcher.one_of([:I420, :I422]), aligned: true}
 
@@ -31,25 +31,33 @@ defmodule Membrane.BlankVideoGenerator do
   def handle_init(opts) do
     %Raw{framerate: {frames, seconds}} = opts.caps
 
-    if caps_correct?(opts.caps) do
-      state =
-        opts
-        |> Map.from_struct()
-        |> Map.put(:current_ts, Ratio.new(0, frames))
-        |> Map.put(:frame, blank_frame(opts.caps))
-        |> Map.put(:ts_increment, Ratio.new(seconds |> Time.seconds(), frames))
+    case caps_correct?(opts.caps) do
+      :ok ->
+        state =
+          opts
+          |> Map.from_struct()
+          |> Map.put(:current_ts, Ratio.new(0, frames))
+          |> Map.put(:frame, blank_frame(opts.caps))
+          |> Map.put(:ts_increment, Ratio.new(seconds |> Time.seconds(), frames))
 
-      {:ok, state}
-    else
-      {:error, :caps_not_supported}
+        {:ok, state}
+
+      {:error, :caps_not_supported} ->
+        raise """
+        Cannot initialize generator, passed caps are not supported.
+        """
+
+      {:error, :format} ->
+        raise """
+        Cannot initialize generator, the size of frame specified by caps doesn't pass format requirements.
+        """
     end
   end
 
   @impl true
   def handle_demand(:output, size, :buffers, _ctx, state) do
-    with {buffers, state} <- get_buffers(size, state) do
-      {{:ok, buffer: {:output, buffers}}, state}
-    else
+    case get_buffers(size, state) do
+      {buffers, state} -> {{:ok, buffer: {:output, buffers}}, state}
       {:eos, buffers, state} -> {{:ok, buffer: {:output, buffers}, end_of_stream: :output}, state}
     end
   end
@@ -59,14 +67,20 @@ defmodule Membrane.BlankVideoGenerator do
     {{:ok, caps: {:output, caps}}, state}
   end
 
-  defp caps_correct?(caps), do: Matcher.match?(@supported_caps, caps) && do_caps_correct?(caps)
+  defp caps_correct?(caps) do
+    if Matcher.match?(@supported_caps, caps) do
+      do_caps_correct?(caps)
+    else
+      {:error, :caps_not_supported}
+    end
+  end
 
   defp do_caps_correct?(%Raw{format: :I420, width: width, height: height}) do
-    rem(height, 2) == 0 && rem(width, 2) == 0
+    if rem(height, 2) == 0 && rem(width, 2) == 0, do: :ok, else: {:error, :format}
   end
 
   defp do_caps_correct?(%Raw{format: :I422, width: width}) do
-    rem(width, 2) == 0
+    if rem(width, 2) == 0, do: :ok, else: {:error, :format}
   end
 
   defp get_buffers(size, state, acc \\ [])
