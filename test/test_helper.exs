@@ -1,2 +1,1 @@
-ExUnit.start()
-Logger.configure(level: :warn)
+ExUnit.start(capture_logs: true)
