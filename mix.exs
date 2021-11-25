@@ -32,13 +32,13 @@ defmodule Membrane.Template.Mixfile do
 
   defp deps do
     [
-      {:credo, "~> 1.5", only: :dev, runtime: false},
+      {:credo, "~> 1.6", only: :dev, runtime: false},
       {:dialyxir, "~> 1.1", only: :dev, runtime: false},
-      {:ex_doc, "~> 0.24", only: :dev, runtime: false},
-      {:membrane_audio_mix_plugin, "~> 0.3.0"},
-      {:membrane_caps_audio_raw, "~> 0.2"},
+      {:ex_doc, "~> 0.26", only: :dev, runtime: false},
+      {:membrane_audio_mix_plugin, "~> 0.4.0"},
+      {:membrane_caps_audio_raw, "~> 0.5"},
       {:membrane_caps_video_raw, "~> 0.1"},
-      {:membrane_core, "~> 0.7.0"}
+      {:membrane_core, "~> 0.8.0"}
     ]
   end
 

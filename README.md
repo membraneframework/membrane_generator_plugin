@@ -59,7 +59,7 @@ defmodule VideoGenerating.Pipeline do
   @impl true
   def handle_init(_) do
     children = [
-      generator: %Membrane.SilenceGenerator{
+      generator: %Membrane.BlankVideoGenerator{
         caps: %Membrane.Caps.Video.Raw{
           format: :I420,
           height: 720,
