@@ -59,9 +59,9 @@ defmodule Membrane.BlankVideoGeneratorTest do
     assert_start_of_stream(pid, :sink)
     assert_sink_caps(pid, :sink, caps)
 
-    assert_sink_buffer(pid, :sink, %Buffer{payload: payload_1, metadata: %{pts: pts_1}})
-    assert_sink_buffer(pid, :sink, %Buffer{payload: payload_2, metadata: %{pts: pts_2}})
-    assert_sink_buffer(pid, :sink, %Buffer{payload: payload_3, metadata: %{pts: pts_3}})
+    assert_sink_buffer(pid, :sink, %Buffer{payload: payload_1, pts: pts_1})
+    assert_sink_buffer(pid, :sink, %Buffer{payload: payload_2, pts: pts_2})
+    assert_sink_buffer(pid, :sink, %Buffer{payload: payload_3, pts: pts_3})
 
     assert pts_1 == 0
     assert pts_2 == Membrane.Time.seconds(1)
