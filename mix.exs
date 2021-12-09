@@ -1,7 +1,7 @@
 defmodule Membrane.Template.Mixfile do
   use Mix.Project
 
-  @version "0.2.2"
+  @version "0.3.0"
   @github_url "https://github.com/membraneframework/membrane_generator_plugin"
 
   def project do
