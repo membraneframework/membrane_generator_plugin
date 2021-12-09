@@ -84,7 +84,7 @@ defmodule Membrane.BlankVideoGenerator do
     {ts, new_state} = get_timestamp(state)
 
     if ts < duration do
-      buffer = %Buffer{payload: frame, pts: ts}
+      buffer = %Buffer{payload: frame, metadata: %{pts: ts}}
       get_buffers(size - 1, new_state, [buffer | acc])
     else
       {:eos, Enum.reverse(acc), state}
