@@ -1,4 +1,4 @@
-defmodule Membrane.Template.Mixfile do
+defmodule Membrane.Generator.Plugin.Mixfile do
   use Mix.Project
 
   @version "0.3.0"
