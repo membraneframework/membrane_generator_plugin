@@ -32,14 +32,14 @@ defmodule Membrane.Generator.Plugin.Mixfile do
 
   defp deps do
     [
-      {:credo, "~> 1.6", only: :dev, runtime: false},
-      {:dialyxir, "~> 1.1", only: :dev, runtime: false},
-      {:ex_doc, "~> 0.26", only: :dev, runtime: false},
-      {:membrane_audio_mix_plugin, "~> 0.4.0"},
+      {:membrane_core, "~> 0.8.0"},
       {:membrane_caps_audio_raw, "~> 0.5"},
       {:membrane_caps_video_raw, "~> 0.1"},
-      {:membrane_core, "~> 0.8.0"},
-      {:membrane_h264_ffmpeg_plugin, "~> 0.14.0", only: :test}
+      {:membrane_audio_mix_plugin, "~> 0.4.0", only: :test},
+      {:membrane_h264_ffmpeg_plugin, "~> 0.16.0", only: :test},
+      {:credo, "~> 1.6", only: :dev, runtime: false},
+      {:dialyxir, "~> 1.1", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.26", only: :dev, runtime: false}
     ]
   end
 
