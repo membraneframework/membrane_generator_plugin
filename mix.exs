@@ -1,7 +1,7 @@
 defmodule Membrane.Generator.Plugin.Mixfile do
   use Mix.Project
 
-  @version "0.3.0"
+  @version "0.4.0"
   @github_url "https://github.com/membraneframework/membrane_generator_plugin"
 
   def project do
@@ -32,14 +32,14 @@ defmodule Membrane.Generator.Plugin.Mixfile do
 
   defp deps do
     [
-      {:membrane_core, "~> 0.8.0"},
-      {:membrane_caps_audio_raw, "~> 0.5"},
-      {:membrane_caps_video_raw, "~> 0.1"},
-      {:membrane_audio_mix_plugin, "~> 0.4.0", only: :test},
-      {:membrane_h264_ffmpeg_plugin, "~> 0.16.0", only: :test},
+      {:membrane_core, "~> 0.9.0"},
+      {:membrane_caps_audio_raw, "~> 0.6"},
+      {:membrane_raw_video_format, "~> 0.2"},
+      {:membrane_audio_mix_plugin, "~> 0.4", only: :test},
+      {:membrane_h264_ffmpeg_plugin, "~> 0.17", only: :test},
       {:credo, "~> 1.6", only: :dev, runtime: false},
       {:dialyxir, "~> 1.1", only: :dev, runtime: false},
-      {:ex_doc, "~> 0.26", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.28", only: :dev, runtime: false}
     ]
   end
 
@@ -59,6 +59,7 @@ defmodule Membrane.Generator.Plugin.Mixfile do
     [
       main: "readme",
       extras: ["README.md", "LICENSE"],
+      formatters: ["html"],
       source_ref: "v#{@version}",
       nest_modules_by_prefix: [Membrane]
     ]
