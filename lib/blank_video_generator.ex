@@ -6,10 +6,10 @@ defmodule Membrane.BlankVideoGenerator do
   use Membrane.Source
 
   alias Membrane.Caps.Matcher
-  alias Membrane.Caps.Video.Raw
+  alias Membrane.RawVideo
   alias Membrane.{Buffer, Time}
 
-  @supported_caps {Raw, format: Matcher.one_of([:I420, :I422]), aligned: true}
+  @supported_caps {RawVideo, pixel_format: Matcher.one_of([:I420, :I422]), aligned: true}
 
   def_options duration: [
                 type: :integer,
@@ -18,7 +18,7 @@ defmodule Membrane.BlankVideoGenerator do
               ],
               caps: [
                 type: :struct,
-                spec: Raw.t(),
+                spec: RawVideo.t(),
                 description: "Video format of the output"
               ]
 
@@ -41,7 +41,7 @@ defmodule Membrane.BlankVideoGenerator do
         """
 
       true ->
-        %Raw{framerate: {frames, seconds}} = opts.caps
+        %RawVideo{framerate: {frames, seconds}} = opts.caps
 
         state =
           opts
@@ -69,11 +69,11 @@ defmodule Membrane.BlankVideoGenerator do
 
   defp caps_supported?(caps), do: Matcher.match?(@supported_caps, caps)
 
-  defp correct_dimensions?(%Raw{format: :I420, width: width, height: height}) do
+  defp correct_dimensions?(%RawVideo{pixel_format: :I420, width: width, height: height}) do
     rem(height, 2) == 0 && rem(width, 2) == 0
   end
 
-  defp correct_dimensions?(%Raw{format: :I422, width: width}) do
+  defp correct_dimensions?(%RawVideo{pixel_format: :I422, width: width}) do
     rem(width, 2) == 0
   end
 
@@ -91,12 +91,12 @@ defmodule Membrane.BlankVideoGenerator do
     end
   end
 
-  defp blank_frame(%Raw{format: :I420, width: width, height: height}) do
+  defp blank_frame(%RawVideo{pixel_format: :I420, width: width, height: height}) do
     :binary.copy(<<16>>, height * width) <>
       :binary.copy(<<128>>, div(height * width, 2))
   end
 
-  defp blank_frame(%Raw{format: :I422, width: width, height: height}) do
+  defp blank_frame(%RawVideo{pixel_format: :I422, width: width, height: height}) do
     :binary.copy(<<16>>, height * width) <>
       :binary.copy(<<128>>, height * width)
   end

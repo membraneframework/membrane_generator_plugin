@@ -4,19 +4,18 @@ defmodule Membrane.BlankVideoGeneratorTest do
 
   import Membrane.Testing.Assertions
 
-  alias Membrane.{BlankVideoGenerator, Buffer}
-  alias Membrane.Caps.Video.Raw
+  alias Membrane.{BlankVideoGenerator, Buffer, RawVideo}
   alias Membrane.H264.FFmpeg.Encoder
   alias Membrane.Testing.{Pipeline, Sink}
 
-  @caps_i420 %Raw{
-    format: :I420,
+  @caps_i420 %RawVideo{
+    pixel_format: :I420,
     height: 720,
     width: 1280,
     framerate: {1, 1},
     aligned: true
   }
-  @caps_i422 %Raw{@caps_i420 | format: :I422}
+  @caps_i422 %RawVideo{@caps_i420 | pixel_format: :I422}
 
   describe "I420 format" do
     test "buffer generation" do
@@ -68,7 +67,7 @@ defmodule Membrane.BlankVideoGeneratorTest do
     assert pts_3 == Membrane.Time.seconds(2)
 
     blank_video = payload_1 <> payload_2 <> payload_3
-    {:ok, size} = Raw.frame_size(caps)
+    {:ok, size} = RawVideo.frame_size(caps)
     assert byte_size(blank_video) == 3 * size
 
     assert_end_of_stream(pid, :sink, :input, 5_000)

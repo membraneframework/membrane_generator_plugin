@@ -15,7 +15,7 @@ The package can be installed by adding `membrane_generator_plugin` to your list 
 ```elixir
 def deps do
   [
-    {:membrane_generator_plugin, "~> 0.3.0"}
+    {:membrane_generator_plugin, "~> 0.4.0"}
   ]
 end
 ```
@@ -60,8 +60,8 @@ defmodule VideoGenerating.Pipeline do
   def handle_init(_) do
     children = [
       generator: %Membrane.BlankVideoGenerator{
-        caps: %Membrane.Caps.Video.Raw{
-          format: :I420,
+        caps: %Membrane.RawVideo{
+          pixel_format: :I420,
           height: 720,
           width: 1280,
           framerate: {30, 1},

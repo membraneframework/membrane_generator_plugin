@@ -14,6 +14,18 @@ defmodule Membrane.SilenceGeneratorTest do
     format: :s16le
   }
 
+  defp gather_payloads(pid, acc \\ <<>>, target_size)
+
+  defp gather_payloads(pid, acc, target_size) when byte_size(acc) < target_size do
+    assert_sink_buffer(pid, :sink, %Buffer{payload: payload})
+    gather_payloads(pid, acc <> payload, target_size)
+  end
+
+  defp gather_payloads(pid, acc, _target_size) do
+    refute_sink_buffer(pid, :sink, %Buffer{})
+    acc
+  end
+
   test "Silence Generator should work with bytes as demand unit" do
     duration = Membrane.Time.seconds(4)
 
@@ -35,13 +47,12 @@ defmodule Membrane.SilenceGeneratorTest do
     assert Pipeline.play(pid) == :ok
     assert_start_of_stream(pid, :sink)
 
-    assert_sink_buffer(pid, :sink, %Buffer{payload: payload_1})
-    assert_sink_buffer(pid, :sink, %Buffer{payload: payload_2})
+    payload = gather_payloads(pid, Raw.time_to_bytes(duration, @caps))
 
     assert_end_of_stream(pid, :sink, :input, 5_000)
     Pipeline.stop_and_terminate(pid, blocking?: true)
 
-    assert payload_1 <> payload_2 == Raw.sound_of_silence(@caps, duration)
+    assert payload == Raw.sound_of_silence(@caps, duration)
   end
 
   test "Silence Generator should work with buffers as demand unit" do
@@ -63,12 +74,11 @@ defmodule Membrane.SilenceGeneratorTest do
     assert Pipeline.play(pid) == :ok
     assert_start_of_stream(pid, :sink)
 
-    assert_sink_buffer(pid, :sink, %Buffer{payload: payload_1})
-    assert_sink_buffer(pid, :sink, %Buffer{payload: payload_2})
+    payload = gather_payloads(pid, Raw.time_to_bytes(duration, @caps))
 
     assert_end_of_stream(pid, :sink, :input, 5_000)
     Pipeline.stop_and_terminate(pid, blocking?: true)
 
-    assert payload_1 <> payload_2 == Raw.sound_of_silence(@caps, duration)
+    assert payload == Raw.sound_of_silence(@caps, duration)
   end
 end
