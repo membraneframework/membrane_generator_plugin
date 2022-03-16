@@ -33,7 +33,7 @@ defmodule Membrane.Generator.Plugin.Mixfile do
   defp deps do
     [
       {:membrane_core, "~> 0.9.0"},
-      {:membrane_caps_audio_raw, "~> 0.6"},
+      {:membrane_raw_audio_format, "~> 0.8.0"},
       {:membrane_raw_video_format, "~> 0.2"},
       {:membrane_audio_mix_plugin, "~> 0.4", only: :test},
       {:membrane_h264_ffmpeg_plugin, "~> 0.17", only: :test},

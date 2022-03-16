@@ -5,13 +5,13 @@ defmodule Membrane.SilenceGeneratorTest do
   import Membrane.Testing.Assertions
 
   alias Membrane.{AudioMixer, Buffer, SilenceGenerator}
-  alias Membrane.Caps.Audio.Raw
+  alias Membrane.RawAudio
   alias Membrane.Testing.{Pipeline, Sink}
 
-  @caps %Raw{
+  @caps %RawAudio{
     channels: 1,
     sample_rate: 16_000,
-    format: :s16le
+    sample_format: :s16le
   }
 
   defp gather_payloads(pid, acc \\ <<>>, target_size)
