@@ -35,11 +35,11 @@ defmodule Membrane.Generator.Plugin.Mixfile do
       {:membrane_core, "~> 0.9.0"},
       {:membrane_raw_audio_format, "~> 0.8.0"},
       {:membrane_raw_video_format, "~> 0.2"},
-      {:membrane_audio_mix_plugin, "~> 0.4", only: :test},
+      {:membrane_audio_mix_plugin, "~> 0.7", only: :test},
       {:membrane_h264_ffmpeg_plugin, "~> 0.17", only: :test},
-      {:credo, "~> 1.6", only: :dev, runtime: false},
-      {:dialyxir, "~> 1.1", only: :dev, runtime: false},
-      {:ex_doc, "~> 0.28", only: :dev, runtime: false}
+      {:credo, ">= 0.0.0", only: :dev, runtime: false},
+      {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
 

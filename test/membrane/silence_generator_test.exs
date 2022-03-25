@@ -47,12 +47,12 @@ defmodule Membrane.SilenceGeneratorTest do
     assert Pipeline.play(pid) == :ok
     assert_start_of_stream(pid, :sink)
 
-    payload = gather_payloads(pid, Raw.time_to_bytes(duration, @caps))
+    payload = gather_payloads(pid, RawAudio.time_to_bytes(duration, @caps))
 
     assert_end_of_stream(pid, :sink, :input, 5_000)
     Pipeline.stop_and_terminate(pid, blocking?: true)
 
-    assert payload == Raw.sound_of_silence(@caps, duration)
+    assert payload == RawAudio.silence(@caps, duration)
   end
 
   test "Silence Generator should work with buffers as demand unit" do
@@ -74,11 +74,11 @@ defmodule Membrane.SilenceGeneratorTest do
     assert Pipeline.play(pid) == :ok
     assert_start_of_stream(pid, :sink)
 
-    payload = gather_payloads(pid, Raw.time_to_bytes(duration, @caps))
+    payload = gather_payloads(pid, RawAudio.time_to_bytes(duration, @caps))
 
     assert_end_of_stream(pid, :sink, :input, 5_000)
     Pipeline.stop_and_terminate(pid, blocking?: true)
 
-    assert payload == Raw.sound_of_silence(@caps, duration)
+    assert payload == RawAudio.silence(@caps, duration)
   end
 end
