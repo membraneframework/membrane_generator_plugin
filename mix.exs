@@ -12,6 +12,10 @@ defmodule Membrane.Generator.Plugin.Mixfile do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      dialyzer: [
+        plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
+        flags: [:error_handling]
+      ],
       description: "Plugin containing media generators",
       package: package(),
       name: "Membrane Generator plugin",
