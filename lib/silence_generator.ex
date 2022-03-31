@@ -6,12 +6,13 @@ defmodule Membrane.SilenceGenerator do
   use Membrane.Source
 
   alias Membrane.{Buffer, Time}
-  alias Membrane.Caps.Audio.Raw
+  alias Membrane.RawAudio
 
   def_options caps: [
                 type: :struct,
-                spec: Raw.t(),
-                description: "Audio caps of generated samples (`t:Membrane.Caps.Audio.Raw.t/0`)"
+                spec: RawAudio.t(),
+                description:
+                  "Audio caps of generated samples (`t:Membrane.Caps.Audio.RawAudio.t/0`)"
               ],
               duration: [
                 type: :timeout,
@@ -28,7 +29,7 @@ defmodule Membrane.SilenceGenerator do
                 default: 2048
               ]
 
-  def_output_pad :output, caps: Raw
+  def_output_pad :output, caps: RawAudio
 
   @impl true
   def handle_init(opts) do
@@ -47,19 +48,19 @@ defmodule Membrane.SilenceGenerator do
 
   @impl true
   def handle_demand(:output, size, :bytes, _ctx, %{caps: caps} = state) do
-    time = Raw.bytes_to_time(size, caps)
+    time = RawAudio.bytes_to_time(size, caps)
     do_handle_demand(time, state)
   end
 
   def handle_demand(:output, buffers, :buffers, _ctx, state) do
     %{caps: caps, frames_per_buffer: frames_per_buffer} = state
 
-    time = buffers * Raw.frames_to_time(frames_per_buffer, caps)
+    time = buffers * RawAudio.frames_to_time(frames_per_buffer, caps)
     do_handle_demand(time, state)
   end
 
   defp do_handle_demand(time, %{caps: caps, duration: :infinity} = state) do
-    buffer = %Buffer{payload: Raw.sound_of_silence(caps, time)}
+    buffer = %Buffer{payload: RawAudio.silence(caps, time)}
     {{:ok, buffer: {:output, buffer}}, state}
   end
 
@@ -67,12 +68,12 @@ defmodule Membrane.SilenceGenerator do
     %{caps: caps, duration: duration, passed_time: passed_time} = state
 
     if passed_time + time < duration do
-      buffer = %Buffer{payload: Raw.sound_of_silence(caps, time)}
+      buffer = %Buffer{payload: RawAudio.silence(caps, time)}
       state = %{state | passed_time: passed_time + time}
 
       {{:ok, buffer: {:output, buffer}}, state}
     else
-      buffer = %Buffer{payload: Raw.sound_of_silence(caps, duration - passed_time)}
+      buffer = %Buffer{payload: RawAudio.silence(caps, duration - passed_time)}
       state = %{state | passed_time: duration}
 
       {{:ok, buffer: {:output, buffer}, end_of_stream: :output}, state}
