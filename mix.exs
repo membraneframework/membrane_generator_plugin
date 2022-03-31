@@ -12,12 +12,11 @@ defmodule Membrane.Generator.Plugin.Mixfile do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      dialyzer: [
-        plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
-        flags: [:error_handling]
-      ],
+      dialyzer: dialyzer(),
+      # hex
       description: "Plugin containing media generators",
       package: package(),
+      # docs
       name: "Membrane Generator plugin",
       source_url: @github_url,
       homepage_url: "https://membraneframework.org",
@@ -45,6 +44,19 @@ defmodule Membrane.Generator.Plugin.Mixfile do
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
+  end
+
+  defp dialyzer() do
+    opts = [
+      plt_local_path: "priv/plts",
+      flags: [:error_handling]
+    ]
+
+    if System.get_env("CI") == "true" do
+      [plt_core_path: "priv/plts"] ++ opts
+    else
+      opts
+    end
   end
 
   defp package do
