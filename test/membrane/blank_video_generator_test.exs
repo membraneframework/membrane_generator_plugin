@@ -52,9 +52,8 @@ defmodule Membrane.BlankVideoGeneratorTest do
 
     pipeline_options = %Pipeline.Options{elements: elements, links: links}
     assert {:ok, pid} = Pipeline.start_link(pipeline_options)
-    on_exit(fn -> Pipeline.stop_and_terminate(pid, blocking: true) end)
+    on_exit(fn -> Pipeline.terminate(pid, blocking: true) end)
 
-    assert Pipeline.play(pid) == :ok
     assert_start_of_stream(pid, :sink)
     assert_sink_caps(pid, :sink, caps)
 
@@ -71,7 +70,7 @@ defmodule Membrane.BlankVideoGeneratorTest do
     assert byte_size(blank_video) == 3 * size
 
     assert_end_of_stream(pid, :sink, :input, 5_000)
-    Pipeline.stop_and_terminate(pid, blocking?: true)
+    Pipeline.terminate(pid, blocking?: true)
   end
 
   defp test_h264(caps) do
@@ -91,11 +90,10 @@ defmodule Membrane.BlankVideoGeneratorTest do
 
     pipeline_options = %Pipeline.Options{elements: elements, links: links}
     assert {:ok, pid} = Pipeline.start_link(pipeline_options)
-    on_exit(fn -> Pipeline.stop_and_terminate(pid, blocking: true) end)
+    on_exit(fn -> Pipeline.terminate(pid, blocking: true) end)
 
-    assert Pipeline.play(pid) == :ok
     assert_start_of_stream(pid, :sink)
     assert_end_of_stream(pid, :sink, :input, 5_000)
-    Pipeline.stop_and_terminate(pid, blocking?: true)
+    Pipeline.terminate(pid, blocking?: true)
   end
 end

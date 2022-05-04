@@ -44,13 +44,12 @@ defmodule Membrane.SilenceGeneratorTest do
     pipeline_options = %Pipeline.Options{elements: elements, links: links}
     assert {:ok, pid} = Pipeline.start_link(pipeline_options)
 
-    assert Pipeline.play(pid) == :ok
     assert_start_of_stream(pid, :sink)
 
     payload = gather_payloads(pid, RawAudio.time_to_bytes(duration, @caps))
 
     assert_end_of_stream(pid, :sink, :input, 5_000)
-    Pipeline.stop_and_terminate(pid, blocking?: true)
+    Pipeline.terminate(pid, blocking?: true)
 
     assert payload == RawAudio.silence(@caps, duration)
   end
@@ -71,13 +70,12 @@ defmodule Membrane.SilenceGeneratorTest do
     pipeline_options = %Pipeline.Options{elements: elements, links: links}
     assert {:ok, pid} = Pipeline.start_link(pipeline_options)
 
-    assert Pipeline.play(pid) == :ok
     assert_start_of_stream(pid, :sink)
 
     payload = gather_payloads(pid, RawAudio.time_to_bytes(duration, @caps))
 
     assert_end_of_stream(pid, :sink, :input, 5_000)
-    Pipeline.stop_and_terminate(pid, blocking?: true)
+    Pipeline.terminate(pid, blocking?: true)
 
     assert payload == RawAudio.silence(@caps, duration)
   end
