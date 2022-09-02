@@ -4,7 +4,7 @@
 [![API Docs](https://img.shields.io/badge/api-docs-yellow.svg?style=flat)](https://hexdocs.pm/membrane_generator_plugin)
 [![CircleCI](https://circleci.com/gh/membraneframework/membrane_generator_plugin.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane_generator_plugin)
 
-This repository contains audio generator.
+This repository contains audio and video generator.
 
 It is part of [Membrane Multimedia Framework](https://membraneframework.org).
 
