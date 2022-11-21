@@ -59,24 +59,23 @@ defmodule Membrane.SilenceGenerator do
     do_handle_demand(time, state)
   end
 
-  defp do_handle_demand(time, %{caps: caps, duration: :infinity} = state) do
-    buffer = %Buffer{payload: RawAudio.silence(caps, time)}
-    {{:ok, buffer: {:output, buffer}}, state}
+  defp do_handle_demand(
+         time,
+         %{caps: caps, duration: :infinity, passed_time: passed_time} = state
+       ) do
+    buffer = %Buffer{payload: RawAudio.silence(caps, time), pts: passed_time}
+    {{:ok, buffer: {:output, buffer}}, %{state | passed_time: passed_time + time}}
   end
 
   defp do_handle_demand(time, state) do
     %{caps: caps, duration: duration, passed_time: passed_time} = state
 
     if passed_time + time < duration do
-      buffer = %Buffer{payload: RawAudio.silence(caps, time)}
-      state = %{state | passed_time: passed_time + time}
-
-      {{:ok, buffer: {:output, buffer}}, state}
+      buffer = %Buffer{payload: RawAudio.silence(caps, time), pts: passed_time}
+      {{:ok, buffer: {:output, buffer}}, %{state | passed_time: passed_time + time}}
     else
-      buffer = %Buffer{payload: RawAudio.silence(caps, duration - passed_time)}
-      state = %{state | passed_time: duration}
-
-      {{:ok, buffer: {:output, buffer}, end_of_stream: :output}, state}
+      buffer = %Buffer{payload: RawAudio.silence(caps, duration - passed_time), pts: passed_time}
+      {{:ok, buffer: {:output, buffer}, end_of_stream: :output}, %{state | passed_time: duration}}
     end
   end
 end
