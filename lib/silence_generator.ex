@@ -49,33 +49,54 @@ defmodule Membrane.SilenceGenerator do
   @impl true
   def handle_demand(:output, size, :bytes, _ctx, %{caps: caps} = state) do
     time = RawAudio.bytes_to_time(size, caps)
-    do_handle_demand(time, state)
+    do_handle_demand(time, time, state)
   end
 
   def handle_demand(:output, buffers, :buffers, _ctx, state) do
     %{caps: caps, frames_per_buffer: frames_per_buffer} = state
 
-    time = buffers * RawAudio.frames_to_time(frames_per_buffer, caps)
-    do_handle_demand(time, state)
+    time = RawAudio.frames_to_time(frames_per_buffer, caps)
+    do_handle_demand(time * buffers, time, state)
   end
 
   defp do_handle_demand(
-         time,
+         total_time,
+         chunk_time,
          %{caps: caps, duration: :infinity, passed_time: passed_time} = state
        ) do
-    buffer = %Buffer{payload: RawAudio.silence(caps, time), pts: passed_time}
-    {{:ok, buffer: {:output, buffer}}, %{state | passed_time: passed_time + time}}
+    buffers = generate_buffers(passed_time, chunk_time, total_time, caps)
+    state = %{state | passed_time: passed_time + total_time}
+
+    {{:ok, buffer: {:output, buffers}}, state}
   end
 
-  defp do_handle_demand(time, state) do
-    %{caps: caps, duration: duration, passed_time: passed_time} = state
+  defp do_handle_demand(
+         total_time,
+         chunk_time,
+         %{caps: caps, duration: duration, passed_time: passed_time} = state
+       ) do
+    total_time = min(total_time, duration - passed_time)
+    buffers = generate_buffers(passed_time, chunk_time, total_time, caps)
+    state = %{state | passed_time: passed_time + total_time}
 
-    if passed_time + time < duration do
-      buffer = %Buffer{payload: RawAudio.silence(caps, time), pts: passed_time}
-      {{:ok, buffer: {:output, buffer}}, %{state | passed_time: passed_time + time}}
-    else
-      buffer = %Buffer{payload: RawAudio.silence(caps, duration - passed_time), pts: passed_time}
-      {{:ok, buffer: {:output, buffer}, end_of_stream: :output}, %{state | passed_time: duration}}
-    end
+    if state.passed_time == duration,
+      do: {{:ok, buffer: {:output, buffers}, end_of_stream: :output}, state},
+      else: {{:ok, buffer: {:output, buffers}}, state}
+  end
+
+  defp generate_buffers(start_time, chunk_time, total_time, caps, buffers \\ [])
+  defp generate_buffers(_start_time, _chunk_time, 0, _caps, buffers), do: Enum.reverse(buffers)
+
+  defp generate_buffers(start_time, chunk_time, total_time, caps, buffers) do
+    buffer_time = min(total_time, chunk_time)
+
+    buffer = %Buffer{
+      payload: RawAudio.silence(caps, buffer_time),
+      pts: start_time
+    }
+
+    generate_buffers(start_time + buffer_time, chunk_time, total_time - buffer_time, caps, [
+      buffer | buffers
+    ])
   end
 end
