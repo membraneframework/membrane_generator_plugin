@@ -47,7 +47,6 @@ defmodule Membrane.BlankVideoGeneratorTest do
     ]
 
     pipeline = Pipeline.start_link_supervised!(structure: structure)
-    on_exit(fn -> Pipeline.terminate(pipeline, blocking: true) end)
 
     assert_start_of_stream(pipeline, :sink)
     assert_sink_stream_format(pipeline, :sink, stream_format)
@@ -73,12 +72,12 @@ defmodule Membrane.BlankVideoGeneratorTest do
 
     structure = [
       child(:generator, %BlankVideoGenerator{stream_format: stream_format, duration: duration})
+      |> via_in(:input, auto_demand_size: 10)
       |> child(:encoder, Encoder)
       |> child(:sink, Sink)
     ]
 
     pipeline = Pipeline.start_link_supervised!(structure: structure)
-    on_exit(fn -> Pipeline.terminate(pipeline, blocking: true) end)
 
     assert_start_of_stream(pipeline, :sink)
     assert_end_of_stream(pipeline, :sink, :input, 5_000)

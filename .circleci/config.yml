@@ -89,7 +89,7 @@ jobs:
       - workspace_init
       - restore_build_cache:
           env: test
-      - run: mix compile
+      - run: mix deps.compile && mix compile
       - run: mix test
 
   lint:

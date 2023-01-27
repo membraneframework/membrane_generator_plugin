@@ -15,7 +15,7 @@ The package can be installed by adding `membrane_generator_plugin` to your list 
 ```elixir
 def deps do
   [
-	{:membrane_generator_plugin, "~> 0.8.0"}
+     {:membrane_generator_plugin, "~> 0.8.0"}
   ]
 end
 ```
@@ -28,7 +28,7 @@ defmodule AudioGenerating.Pipeline do
   use Membrane.Pipeline
 
   @impl true
-  def handle_init(_) do
+  def handle_init(_ctx, _opts) do
     children = [
       generator: %Membrane.SilenceGenerator{
         stream_format: %Membrane.RawAudio{
@@ -57,7 +57,7 @@ defmodule VideoGenerating.Pipeline do
   use Membrane.Pipeline
 
   @impl true
-  def handle_init(_) do
+  def handle_init(_ctx, _opts) do
     children = [
       generator: %Membrane.BlankVideoGenerator{
         stream_format: %Membrane.RawVideo{

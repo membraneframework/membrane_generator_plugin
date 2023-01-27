@@ -8,8 +8,6 @@ defmodule Membrane.BlankVideoGenerator do
   alias Membrane.RawVideo
   alias Membrane.{Buffer, Time}
 
-  # @supported_stream_format %RawVideo{pixel_format: pixel_format, aligned: true} when pixel_format in [:I420, :I422]
-
   def_options duration: [
                 spec: Time.t(),
                 description: "Duration of the output"
@@ -28,12 +26,12 @@ defmodule Membrane.BlankVideoGenerator do
   @impl true
   def handle_init(_context, opts) do
     cond do
-      !stream_format_supported?(opts.stream_format) ->
+      not stream_format_supported?(opts.stream_format) ->
         raise """
         Cannot initialize generator, passed stream_format are not supported.
         """
 
-      !correct_dimensions?(opts.stream_format) ->
+      not correct_dimensions?(opts.stream_format) ->
         raise """
         Cannot initialize generator, the size of frame specified by stream_format doesn't pass format requirements.
         """
@@ -55,7 +53,7 @@ defmodule Membrane.BlankVideoGenerator do
   @impl true
   def handle_demand(:output, size, :buffers, _ctx, state) do
     case get_buffers(size, state) do
-      {buffers, state} -> {{:ok, buffer: {:output, buffers}}, state}
+      {buffers, state} -> {[buffer: {:output, buffers}], state}
       {:eos, buffers, state} -> {[buffer: {:output, buffers}, end_of_stream: :output], state}
     end
   end
