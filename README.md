@@ -58,26 +58,24 @@ defmodule VideoGenerating.Pipeline do
 
   @impl true
   def handle_init(_ctx, _opts) do
-    children = [
-      generator: %Membrane.BlankVideoGenerator{
-        stream_format: %Membrane.RawVideo{
-          pixel_format: :I420,
-          height: 720,
-          width: 1280,
-          framerate: {30, 1},
-          aligned: true
-        },
-        duration: Membrane.Time.milliseconds(100)
-      },
-      sink: %Membrane.File.Sink{location: "/tmp/output.raw"},
+    structure = [
+      child(
+        :generator,
+        %Membrane.BlankVideoGenerator{
+          stream_format: %Membrane.RawVideo{
+            pixel_format: :I420,
+            height: 720,
+            width: 1280,
+            framerate: {30, 1},
+            aligned: true
+          },
+          duration: Membrane.Time.milliseconds(100)
+        }
+      )
+      |> child(:sink, %Membrane.File.Sink{location: "/tmp/output.raw"})
     ]
 
-    links = [
-      link(:generator)
-      |> to(:sink)
-    ]
-
-    {{:ok, spec: %ParentSpec{children: children, links: links}}, %{}}
+    {[spec: structure], %{}}
   end
 end
 ```
