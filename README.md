@@ -31,7 +31,7 @@ defmodule AudioGenerating.Pipeline do
   def handle_init(_) do
     children = [
       generator: %Membrane.SilenceGenerator{
-        caps: %Membrane.Caps.Audio.Raw{
+        stream_format: %Membrane.stream_format.Audio.Raw{
           channels: 1,
           sample_rate: 16_000,
           format: :s16le
@@ -60,7 +60,7 @@ defmodule VideoGenerating.Pipeline do
   def handle_init(_) do
     children = [
       generator: %Membrane.BlankVideoGenerator{
-        caps: %Membrane.RawVideo{
+        stream_format: %Membrane.RawVideo{
           pixel_format: :I420,
           height: 720,
           width: 1280,
