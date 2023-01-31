@@ -29,24 +29,18 @@ defmodule AudioGenerating.Pipeline do
 
   @impl true
   def handle_init(_) do
-    children = [
-      generator: %Membrane.SilenceGenerator{
+    structure =
+      child(:generator, %Membrane.SilenceGenerator{
         stream_format: %Membrane.stream_format.Audio.Raw{
           channels: 1,
           sample_rate: 16_000,
           format: :s16le
         },
         duration: Membrane.Time.milliseconds(100)
-      },
-      sink: %Membrane.File.Sink{location: "/tmp/output.raw"},
-    ]
+      })
+      |> child(:sink, %Membrane.File.Sink{location: "/tmp/output.raw"})
 
-    links = [
-      link(:generator)
-      |> to(:sink)
-    ]
-
-    {{:ok, spec: %ParentSpec{children: children, links: links}}, %{}}
+    {[spec: structure], %{}}
   end
 end
 ```
@@ -58,8 +52,8 @@ defmodule VideoGenerating.Pipeline do
 
   @impl true
   def handle_init(_) do
-    children = [
-      generator: %Membrane.BlankVideoGenerator{
+    structure =
+      child(:generator, %Membrane.BlankVideoGenerator{
         stream_format: %Membrane.RawVideo{
           pixel_format: :I420,
           height: 720,
@@ -68,16 +62,10 @@ defmodule VideoGenerating.Pipeline do
           aligned: true
         },
         duration: Membrane.Time.milliseconds(100)
-      },
-      sink: %Membrane.File.Sink{location: "/tmp/output.raw"},
-    ]
+      })
+      |> child(sink: %Membrane.File.Sink{location: "/tmp/output.raw"})
 
-    links = [
-      link(:generator)
-      |> to(:sink)
-    ]
-
-    {{:ok, spec: %ParentSpec{children: children, links: links}}, %{}}
+    {[spec: structure], %{}}
   end
 end
 ```
