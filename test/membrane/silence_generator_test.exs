@@ -33,11 +33,11 @@ defmodule Membrane.SilenceGeneratorTest do
     duration = Membrane.Time.seconds(4)
 
     structure =
-      child(:generator, %SilenceGenerator{stream_format: @stream_format, duration: duration}) |>
-      child(:mixer, %AudioMixer{stream_format: @stream_format, prevent_clipping: false}) |>
-      child(:sink, Sink)
+      child(:generator, %SilenceGenerator{stream_format: @stream_format, duration: duration})
+      |> child(:mixer, %AudioMixer{stream_format: @stream_format, prevent_clipping: false})
+      |> child(:sink, Sink)
 
-      pipeline = Pipeline.start_link_supervised!(structure: structure)
+    pipeline = Pipeline.start_link_supervised!(structure: structure)
 
     assert_start_of_stream(pipeline, :sink)
 
@@ -53,8 +53,8 @@ defmodule Membrane.SilenceGeneratorTest do
     duration = Membrane.Time.seconds(6)
 
     structure =
-      child(:generator, %SilenceGenerator{stream_format: @stream_format, duration: duration}) |>
-      child(:sink, Sink)
+      child(:generator, %SilenceGenerator{stream_format: @stream_format, duration: duration})
+      |> child(:sink, Sink)
 
     pipeline = Pipeline.start_link_supervised!(structure: structure)
 

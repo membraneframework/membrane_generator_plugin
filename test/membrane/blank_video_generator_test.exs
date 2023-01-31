@@ -44,8 +44,6 @@ defmodule Membrane.BlankVideoGeneratorTest do
       child(:generator, %BlankVideoGenerator{stream_format: stream_format, duration: duration})
       |> child(:sink, Sink)
 
-
-
     pipeline = Pipeline.start_link_supervised!(structure: structure)
 
     assert_start_of_stream(pipeline, :sink)

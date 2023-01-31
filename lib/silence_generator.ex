@@ -10,8 +10,7 @@ defmodule Membrane.SilenceGenerator do
 
   def_options stream_format: [
                 spec: RawAudio.t(),
-                description:
-                  "Audio stream format of generated samples (RawAudio.t/0`)"
+                description: "Audio stream format of generated samples (RawAudio.t/0`)"
               ],
               duration: [
                 spec: Time.t() | :infinity,
@@ -82,7 +81,9 @@ defmodule Membrane.SilenceGenerator do
   end
 
   defp generate_buffers(start_time, chunk_time, total_time, stream_format, buffers \\ [])
-  defp generate_buffers(_start_time, _chunk_time, 0, _stream_format, buffers), do: Enum.reverse(buffers)
+
+  defp generate_buffers(_start_time, _chunk_time, 0, _stream_format, buffers),
+    do: Enum.reverse(buffers)
 
   defp generate_buffers(start_time, chunk_time, total_time, stream_format, buffers) do
     buffer_time = min(total_time, chunk_time)
@@ -92,8 +93,14 @@ defmodule Membrane.SilenceGenerator do
       pts: start_time
     }
 
-    generate_buffers(start_time + buffer_time, chunk_time, total_time - buffer_time, stream_format, [
-      buffer | buffers
-    ])
+    generate_buffers(
+      start_time + buffer_time,
+      chunk_time,
+      total_time - buffer_time,
+      stream_format,
+      [
+        buffer | buffers
+      ]
+    )
   end
 end
