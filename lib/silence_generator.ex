@@ -10,7 +10,7 @@ defmodule Membrane.SilenceGenerator do
 
   def_options stream_format: [
                 spec: RawAudio.t(),
-                description: "Audio stream format of generated samples (RawAudio.t/0`)"
+                description: "Audio stream format of generated samples (`RawAudio.t/0`)"
               ],
               duration: [
                 spec: Time.t() | :infinity,
