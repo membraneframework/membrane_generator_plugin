@@ -8,6 +8,8 @@ defmodule Membrane.BlankVideoGenerator do
   alias Membrane.RawVideo
   alias Membrane.{Buffer, Time}
 
+  @supported_pixel_formats [:I420, :I422]
+
   def_options duration: [
                 spec: Time.t(),
                 description: "Duration of the output"
@@ -19,7 +21,8 @@ defmodule Membrane.BlankVideoGenerator do
 
   def_output_pad :output,
     accepted_format:
-      %RawVideo{pixel_format: pixel_format, aligned: true} when pixel_format in [:I420, :I422],
+      %RawVideo{pixel_format: pixel_format, aligned: true}
+      when pixel_format in @supported_pixel_formats,
     mode: :pull,
     availability: :always
 
@@ -64,7 +67,7 @@ defmodule Membrane.BlankVideoGenerator do
   end
 
   defp stream_format_supported?(%RawVideo{pixel_format: pixel_format, aligned: true})
-       when pixel_format in [:I420, :I422],
+       when pixel_format in @supported_pixel_formats,
        do: true
 
   defp stream_format_supported?(_stream_format), do: false
