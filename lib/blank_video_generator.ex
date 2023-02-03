@@ -5,69 +5,72 @@ defmodule Membrane.BlankVideoGenerator do
 
   use Membrane.Source
 
-  alias Membrane.Caps.Matcher
   alias Membrane.RawVideo
   alias Membrane.{Buffer, Time}
 
-  @supported_caps {RawVideo, pixel_format: Matcher.one_of([:I420, :I422]), aligned: true}
+  @supported_pixel_formats [:I420, :I422]
 
   def_options duration: [
-                type: :integer,
                 spec: Time.t(),
                 description: "Duration of the output"
               ],
-              caps: [
-                type: :struct,
+              stream_format: [
                 spec: RawVideo.t(),
                 description: "Video format of the output"
               ]
 
   def_output_pad :output,
-    caps: @supported_caps,
+    accepted_format:
+      %RawVideo{pixel_format: pixel_format, aligned: true}
+      when pixel_format in @supported_pixel_formats,
     mode: :pull,
     availability: :always
 
   @impl true
-  def handle_init(opts) do
+  def handle_init(_context, opts) do
     cond do
-      !caps_supported?(opts.caps) ->
+      not stream_format_supported?(opts.stream_format) ->
         raise """
-        Cannot initialize generator, passed caps are not supported.
+        Cannot initialize generator, passed stream_format are not supported.
         """
 
-      !correct_dimensions?(opts.caps) ->
+      not correct_dimensions?(opts.stream_format) ->
         raise """
-        Cannot initialize generator, the size of frame specified by caps doesn't pass format requirements.
+        Cannot initialize generator, the size of frame specified by stream_format doesn't pass format requirements.
         """
 
       true ->
-        %RawVideo{framerate: {frames, seconds}} = opts.caps
+        %RawVideo{framerate: {frames, seconds}} = opts.stream_format
 
         state =
           opts
           |> Map.from_struct()
           |> Map.put(:current_ts, Ratio.new(0, frames))
-          |> Map.put(:frame, blank_frame(opts.caps))
+          |> Map.put(:frame, blank_frame(opts.stream_format))
           |> Map.put(:ts_increment, Ratio.new(seconds |> Time.seconds(), frames))
 
-        {:ok, state}
+        {[], state}
     end
   end
 
   @impl true
   def handle_demand(:output, size, :buffers, _ctx, state) do
     case get_buffers(size, state) do
-      {buffers, state} -> {{:ok, buffer: {:output, buffers}}, state}
-      {:eos, buffers, state} -> {{:ok, buffer: {:output, buffers}, end_of_stream: :output}, state}
+      {buffers, state} -> {[buffer: {:output, buffers}], state}
+      {:eos, buffers, state} -> {[buffer: {:output, buffers}, end_of_stream: :output], state}
     end
   end
 
   @impl true
-  def handle_prepared_to_playing(_context, %{caps: caps} = state) do
-    {{:ok, caps: {:output, caps}}, state}
+  def handle_playing(_context, %{stream_format: stream_format} = state) do
+    {[stream_format: {:output, stream_format}], state}
   end
 
-  defp caps_supported?(caps), do: Matcher.match?(@supported_caps, caps)
+  defp stream_format_supported?(%RawVideo{pixel_format: pixel_format, aligned: true})
+       when pixel_format in @supported_pixel_formats,
+       do: true
+
+  defp stream_format_supported?(_stream_format), do: false
 
   defp correct_dimensions?(%RawVideo{pixel_format: :I420, width: width, height: height}) do
     rem(height, 2) == 0 && rem(width, 2) == 0

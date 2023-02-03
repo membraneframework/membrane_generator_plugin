@@ -15,7 +15,7 @@ The package can be installed by adding `membrane_generator_plugin` to your list 
 ```elixir
 def deps do
   [
-	{:membrane_generator_plugin, "~> 0.7.1"}
+     {:membrane_generator_plugin, "~> 0.8.0"}
   ]
 end
 ```
@@ -28,25 +28,20 @@ defmodule AudioGenerating.Pipeline do
   use Membrane.Pipeline
 
   @impl true
-  def handle_init(_) do
-    children = [
-      generator: %Membrane.SilenceGenerator{
-        caps: %Membrane.Caps.Audio.Raw{
+  def handle_init(_ctx, _opts) do
+    structure = 
+      child(
+      :generator, %Membrane.SilenceGenerator{
+        stream_format: %Membrane.RawAudio{
           channels: 1,
           sample_rate: 16_000,
           format: :s16le
         },
         duration: Membrane.Time.milliseconds(100)
-      },
-      sink: %Membrane.File.Sink{location: "/tmp/output.raw"},
-    ]
+      })
+      |> child(:sink, %Membrane.File.Sink{location: "/tmp/output.raw"})
 
-    links = [
-      link(:generator)
-      |> to(:sink)
-    ]
-
-    {{:ok, spec: %ParentSpec{children: children, links: links}}, %{}}
+    {[spec: structure], %{}}
   end
 end
 ```
@@ -57,27 +52,24 @@ defmodule VideoGenerating.Pipeline do
   use Membrane.Pipeline
 
   @impl true
-  def handle_init(_) do
-    children = [
-      generator: %Membrane.BlankVideoGenerator{
-        caps: %Membrane.RawVideo{
-          pixel_format: :I420,
-          height: 720,
-          width: 1280,
-          framerate: {30, 1},
-          aligned: true
-        },
-        duration: Membrane.Time.milliseconds(100)
-      },
-      sink: %Membrane.File.Sink{location: "/tmp/output.raw"},
-    ]
+  def handle_init(_ctx, _opts) do
+    structure = 
+      child(
+        :generator,
+        %Membrane.BlankVideoGenerator{
+          stream_format: %Membrane.RawVideo{
+            pixel_format: :I420,
+            height: 720,
+            width: 1280,
+            framerate: {30, 1},
+            aligned: true
+          },
+          duration: Membrane.Time.milliseconds(100)
+        }
+      )
+      |> child(:sink, %Membrane.File.Sink{location: "/tmp/output.raw"})
 
-    links = [
-      link(:generator)
-      |> to(:sink)
-    ]
-
-    {{:ok, spec: %ParentSpec{children: children, links: links}}, %{}}
+    {[spec: structure], %{}}
   end
 end
 ```
