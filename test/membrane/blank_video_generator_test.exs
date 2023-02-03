@@ -41,10 +41,9 @@ defmodule Membrane.BlankVideoGeneratorTest do
   defp test_for_stream_format(stream_format) do
     duration = Membrane.Time.seconds(3)
 
-    structure = [
+    structure =
       child(:generator, %BlankVideoGenerator{stream_format: stream_format, duration: duration})
       |> child(:sink, Sink)
-    ]
 
     pipeline = Pipeline.start_link_supervised!(structure: structure)
 
@@ -70,12 +69,11 @@ defmodule Membrane.BlankVideoGeneratorTest do
   defp test_h264(stream_format) do
     duration = Membrane.Time.seconds(10)
 
-    structure = [
+    structure =
       child(:generator, %BlankVideoGenerator{stream_format: stream_format, duration: duration})
       |> via_in(:input, auto_demand_size: 10)
       |> child(:encoder, Encoder)
       |> child(:sink, Sink)
-    ]
 
     pipeline = Pipeline.start_link_supervised!(structure: structure)
 

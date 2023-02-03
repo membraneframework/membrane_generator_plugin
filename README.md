@@ -40,7 +40,6 @@ defmodule AudioGenerating.Pipeline do
         duration: Membrane.Time.milliseconds(100)
       })
       |> child(:sink, %Membrane.File.Sink{location: "/tmp/output.raw"})
-    ]
 
     {[spec: structure], %{}}
   end
@@ -54,7 +53,7 @@ defmodule VideoGenerating.Pipeline do
 
   @impl true
   def handle_init(_ctx, _opts) do
-    structure = [
+    structure = 
       child(
         :generator,
         %Membrane.BlankVideoGenerator{
@@ -69,7 +68,6 @@ defmodule VideoGenerating.Pipeline do
         }
       )
       |> child(:sink, %Membrane.File.Sink{location: "/tmp/output.raw"})
-    ]
 
     {[spec: structure], %{}}
   end

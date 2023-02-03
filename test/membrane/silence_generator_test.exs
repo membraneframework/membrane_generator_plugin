@@ -30,11 +30,10 @@ defmodule Membrane.SilenceGeneratorTest do
   test "Silence Generator should work with bytes as demand unit" do
     duration = Membrane.Time.seconds(4)
 
-    structure = [
+    structure =
       child(:generator, %SilenceGenerator{stream_format: @stream_format, duration: duration})
       |> child(:mixer, %AudioMixer{stream_format: @stream_format, prevent_clipping: false})
       |> child(:sink, Sink)
-    ]
 
     pipeline = Pipeline.start_link_supervised!(structure: structure)
 
@@ -51,10 +50,9 @@ defmodule Membrane.SilenceGeneratorTest do
   test "Silence Generator should work with buffers as demand unit" do
     duration = Membrane.Time.seconds(6)
 
-    structure = [
+    structure =
       child(:generator, %SilenceGenerator{stream_format: @stream_format, duration: duration})
       |> child(:sink, Sink)
-    ]
 
     pipeline = Pipeline.start_link_supervised!(structure: structure)
 
