@@ -15,7 +15,7 @@ The package can be installed by adding `membrane_generator_plugin` to your list 
 ```elixir
 def deps do
   [
-     {:membrane_generator_plugin, "~> 0.8.0"}
+     {:membrane_generator_plugin, "~> 0.8.1"}
   ]
 end
 ```

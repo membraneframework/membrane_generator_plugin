@@ -1,7 +1,7 @@
 defmodule Membrane.Generator.Plugin.Mixfile do
   use Mix.Project
 
-  @version "0.8.0"
+  @version "0.8.1"
   @github_url "https://github.com/membraneframework/membrane_generator_plugin"
 
   def project do
@@ -37,9 +37,9 @@ defmodule Membrane.Generator.Plugin.Mixfile do
     [
       {:membrane_core, "~> 0.11.0"},
       {:membrane_raw_audio_format, "~> 0.10.0"},
-      {:membrane_raw_video_format, "~> 0.2"},
+      {:membrane_raw_video_format, "~> 0.3"},
       {:membrane_audio_mix_plugin, "~> 0.12.0", only: :test},
-      {:membrane_h264_ffmpeg_plugin, "~> 0.25.0", only: :test},
+      {:membrane_h264_ffmpeg_plugin, "~> 0.26.2", only: :test},
       {:credo, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
