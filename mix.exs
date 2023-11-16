@@ -39,7 +39,7 @@ defmodule Membrane.Generator.Plugin.Mixfile do
       {:membrane_raw_audio_format, "~> 0.12.0"},
       {:membrane_raw_video_format, "~> 0.3"},
       {:membrane_audio_mix_plugin, "~> 0.16.0", only: :test},
-      {:membrane_h264_ffmpeg_plugin, "~> 0.27.0", only: :test},
+      {:membrane_h264_ffmpeg_plugin, "~> 0.31.0", only: :test},
       {:credo, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}

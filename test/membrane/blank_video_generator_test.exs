@@ -45,7 +45,7 @@ defmodule Membrane.BlankVideoGeneratorTest do
       child(:generator, %BlankVideoGenerator{stream_format: stream_format, duration: duration})
       |> child(:sink, Sink)
 
-    pipeline = Pipeline.start_link_supervised!(structure: structure)
+    pipeline = Pipeline.start_link_supervised!(spec: structure)
 
     assert_start_of_stream(pipeline, :sink)
     assert_sink_stream_format(pipeline, :sink, stream_format)
@@ -63,7 +63,7 @@ defmodule Membrane.BlankVideoGeneratorTest do
     assert byte_size(blank_video) == 3 * size
 
     assert_end_of_stream(pipeline, :sink, :input, 5_000)
-    Pipeline.terminate(pipeline, blocking?: true)
+    Pipeline.terminate(pipeline)
   end
 
   defp test_h264(stream_format) do
@@ -75,10 +75,10 @@ defmodule Membrane.BlankVideoGeneratorTest do
       |> child(:encoder, Encoder)
       |> child(:sink, Sink)
 
-    pipeline = Pipeline.start_link_supervised!(structure: structure)
+    pipeline = Pipeline.start_link_supervised!(spec: structure)
 
     assert_start_of_stream(pipeline, :sink)
     assert_end_of_stream(pipeline, :sink, :input, 5_000)
-    Pipeline.terminate(pipeline, blocking?: true)
+    Pipeline.terminate(pipeline)
   end
 end

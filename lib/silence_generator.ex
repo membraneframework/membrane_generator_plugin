@@ -29,7 +29,7 @@ defmodule Membrane.SilenceGenerator do
                 default: 2048
               ]
 
-  def_output_pad :output, accepted_format: RawAudio
+  def_output_pad :output, accepted_format: RawAudio, flow_control: :manual
 
   @impl true
   def handle_init(_context, opts) do
