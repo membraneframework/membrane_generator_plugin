@@ -23,8 +23,7 @@ defmodule Membrane.BlankVideoGenerator do
     accepted_format:
       %RawVideo{pixel_format: pixel_format, aligned: true}
       when pixel_format in @supported_pixel_formats,
-    mode: :pull,
-    availability: :always
+    flow_control: :manual
 
   @impl true
   def handle_init(_context, opts) do
@@ -105,7 +104,7 @@ defmodule Membrane.BlankVideoGenerator do
   end
 
   defp get_timestamp(%{current_ts: current_ts, ts_increment: ts_increment} = state) do
-    use Ratio
+    use Numbers, overload_operators: true
 
     new_ts = current_ts + ts_increment
     result_ts = current_ts |> Ratio.trunc()

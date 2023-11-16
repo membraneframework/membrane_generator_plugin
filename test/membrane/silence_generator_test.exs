@@ -35,14 +35,14 @@ defmodule Membrane.SilenceGeneratorTest do
       |> child(:mixer, %AudioMixer{stream_format: @stream_format, prevent_clipping: false})
       |> child(:sink, Sink)
 
-    pipeline = Pipeline.start_link_supervised!(structure: structure)
+    pipeline = Pipeline.start_link_supervised!(spec: structure)
 
     assert_start_of_stream(pipeline, :sink)
 
     payload = gather_payloads(pipeline, RawAudio.time_to_bytes(duration, @stream_format))
 
     assert_end_of_stream(pipeline, :sink, :input, 5_000)
-    Pipeline.terminate(pipeline, blocking?: true)
+    Pipeline.terminate(pipeline)
 
     assert payload == RawAudio.silence(@stream_format, duration)
   end
@@ -54,14 +54,14 @@ defmodule Membrane.SilenceGeneratorTest do
       child(:generator, %SilenceGenerator{stream_format: @stream_format, duration: duration})
       |> child(:sink, Sink)
 
-    pipeline = Pipeline.start_link_supervised!(structure: structure)
+    pipeline = Pipeline.start_link_supervised!(spec: structure)
 
     assert_start_of_stream(pipeline, :sink)
 
     payload = gather_payloads(pipeline, RawAudio.time_to_bytes(duration, @stream_format))
 
     assert_end_of_stream(pipeline, :sink, :input, 5_000)
-    Pipeline.terminate(pipeline, blocking?: true)
+    Pipeline.terminate(pipeline)
 
     assert payload == RawAudio.silence(@stream_format, duration)
   end
