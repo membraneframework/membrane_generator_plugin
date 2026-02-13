@@ -35,7 +35,7 @@ defmodule AudioGenerating.Pipeline do
         stream_format: %Membrane.RawAudio{
           channels: 1,
           sample_rate: 16_000,
-          format: :s16le
+          sample_format: :s16le
         },
         duration: Membrane.Time.milliseconds(100)
       })
