@@ -5,8 +5,8 @@ defmodule Membrane.BlankVideoGenerator do
 
   use Membrane.Source
 
-  alias Membrane.RawVideo
   alias Membrane.{Buffer, Time}
+  alias Membrane.RawVideo
 
   @supported_pixel_formats [:I420, :I422]
 
