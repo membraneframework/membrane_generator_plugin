@@ -11,8 +11,6 @@ jobs:
 
   test-arm:
     uses: membraneframework/membrane_actions/.github/workflows/test.yml@main
-    with:
-      cache-version: 1
 
   test:
     uses: membraneframework/membrane_actions/.github/workflows/test.yml@main
