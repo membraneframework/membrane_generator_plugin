@@ -10,35 +10,7 @@ jobs:
     uses: membraneframework/membrane_actions/.github/workflows/build-test.yml@main
 
   test:
-    runs-on: ubuntu-24.04-arm
-    env:
-      MIX_ENV: test
-    container:
-      image: membraneframeworklabs/docker_membrane:latest
-      env:
-        ASDF_DATA_DIR: /root/.asdf
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Ensure priv dir exists
-        run: mkdir -p priv
-
-      - name: Get mix dependencies
-        uses: membraneframework/membrane_actions/actions/get-mix-deps@main
-        with:
-          cache-version: 1
-
-      - name: Restore build cache
-        uses: membraneframework/membrane_actions/actions/use-build-cache@main
-        with:
-          cache-version: 1
-          env: test
-
-      - name: Compile
-        run: mix compile
-
-      - name: Run tests
-        run: mix test --warnings-as-errors
+    uses: membraneframework/membrane_actions/.github/workflows/test.yml@main
 
   lint:
     uses: membraneframework/membrane_actions/.github/workflows/lint.yml@main
