@@ -23,6 +23,7 @@ defmodule Membrane.BlankVideoGeneratorTest do
       test_for_stream_format(@stream_format_i420)
     end
 
+    @tag :flaky
     test "encoding generated buffers to H264" do
       test_h264(@stream_format_i420)
     end
@@ -33,6 +34,7 @@ defmodule Membrane.BlankVideoGeneratorTest do
       test_for_stream_format(@stream_format_i422)
     end
 
+    @tag :flaky
     test "encoding generated buffers to H264" do
       test_h264(@stream_format_i422)
     end

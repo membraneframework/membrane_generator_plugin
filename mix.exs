@@ -1,7 +1,7 @@
 defmodule Membrane.Generator.Plugin.Mixfile do
   use Mix.Project
 
-  @version "0.10.1"
+  @version "0.10.2"
   @github_url "https://github.com/membraneframework/membrane_generator_plugin"
 
   def project do
@@ -48,12 +48,13 @@ defmodule Membrane.Generator.Plugin.Mixfile do
 
   defp dialyzer() do
     opts = [
-      plt_local_path: "priv/plts",
       flags: [:error_handling]
     ]
 
     if System.get_env("CI") == "true" do
-      [plt_core_path: "priv/plts"] ++ opts
+      # Store PLTs in cacheable directory for CI
+      File.mkdir_p!(Path.join([__DIR__, "priv", "plts"]))
+      [plt_local_path: "priv/plts", plt_core_path: "priv/plts"] ++ opts
     else
       opts
     end
